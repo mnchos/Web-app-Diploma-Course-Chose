@@ -1,0 +1,243 @@
+<html lang="ru">
+
+<style>
+
+  * {box-sizing: border-box}
+
+  /* Full-width input fields */
+
+  input[type=text], input[type=password] {
+
+    width: 100%;
+
+    padding: 15px;
+
+    margin: 5px 0 22px 0;
+
+    display: inline-block;
+
+    border: none;
+
+    background: #f1f1f1;
+
+  }
+
+  input[type=text]:focus, input[type=password]:focus {
+
+    background-color: #ddd;
+
+    outline: none;
+
+  }
+
+  hr {
+
+    border: 1px solid #f1f1f1;
+
+    margin-bottom: 25px;
+
+  }
+
+  /* Set a style for all buttons */
+
+  button {
+
+    background-color: #4CAF50;
+
+    color: white;
+
+    padding: 14px 20px;
+
+    margin: 10px 0;
+
+    border: none;
+
+    cursor: pointer;
+
+    opacity: 0.9;
+
+  }
+
+  button:hover {
+
+    opacity:1;
+
+  }
+
+  /* Extra styles for the cancel button */
+
+  .cancelbtn {
+
+    padding: 14px 20px;
+
+    background-color: #f44336;
+
+  }
+
+  .cancelbtn1 {
+
+    background-color: gray;
+
+    border: none;
+
+    color: white;
+
+    padding: 14px 22px;
+
+    text-align: center;
+
+    text-decoration: none;
+
+    display: inline-block;
+
+    font-size: 12px;
+
+    width: 10%;
+
+  }
+
+  /* Float cancel and signup buttons and add an equal width */
+
+  .cancelbtn, .signupbtn {
+
+    float: left;
+
+    width: 50%;
+
+  }
+
+  /* Add padding to container elements */
+
+  .container {
+
+    padding: 16px;
+
+  }
+
+  /* Change styles for cancel button and signup button on extra small screens */
+
+  @media screen and (max-width: 300px) {
+
+    .cancelbtn, .signupbtn {
+
+      width: 100%;
+
+    }
+
+  }
+
+</style>
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <title>Регистрация</title>
+
+  <link rel="shortcut icon" type="image/favicon.icon" href="img\logotip.png"/>
+
+  <link rel="stylesheet" href="css/css.css">
+
+</head>
+
+<body>
+
+<?php
+
+if(!isset($_SESSION['login']) && !isset($_SESSION['password'])){
+
+?>
+
+<div id="form_register">
+
+  <form action="save_user.php" method="post" style="border:1px solid #ccc">
+
+    <div class="container">
+
+      <h1>Регистрация</h1>
+
+      <p>Пожалуйста, заполните эту форму, чтобы создать учетную запись.</p>
+
+      <hr>
+
+      <label for="email"><b>Логин</b></label>
+
+      <input name="login" type="text" size="16" maxlength="16" placeholder="Введите логин" required>
+
+      <label for="psw"><b>Пароль</b></label>
+
+      <input name="password" type="password" size="16" maxlength="16" placeholder="Введите пароль" required>
+
+      <p>Создавая учётную запись, вы соглашаетесь с нашими <a href="uslconf.html" target="_blank" style="text-decoration: none">Условиями и конфиденциальностью</a></p>
+
+      <div class="clearfix">
+
+        <a href="index.php"><button type="button" class="cancelbtn">Отмена</button></a>
+
+        <button type="submit" name="submit" class="signupbtn">Зарегистрироваться</button>
+
+      </div>
+
+      <a href="show_users.php"><button type="button" class="cancelbtn1">Вывести пользователей</button></a><br>
+
+      <a href="update.php"><button type="button" class="cancelbtn1">Изменить пользователя</button></a><br>
+
+      <a href="delete.php"><button type="button" class="cancelbtn1">Удалить пользователя </button></a><br>
+
+    </div>
+
+  </form>
+
+</div>
+
+<?php
+
+}else{
+
+?>
+
+<div id="authorized">
+
+  <h1>Регистрация</h1>
+
+  <h2>Вы уже зарегистрированы</h2>
+
+</div>
+
+<?php
+
+}
+
+?>
+
+</body>
+
+</html>
+
+Save_user.php
+
+<?php
+
+session_start();
+
+$mysqli = new mysqli('localhost', 'root', '1234', 'clinica');
+
+$rnd = sprintf('%08x%08x%08x%08x', rand(), rand(), rand(), rand());
+
+$passwordhash = sha1($password. $rnd);
+
+$stmt = $mysqli->prepare('INSERT INTO users(login, password, rnd) VALUES(?, ?, ?)');
+
+$stmt->bind_param('sss', $login, $passwordhash, $rnd);
+
+$stmt->execute();
+
+$_SESSION["success_messages"] = "<p class='success_message'>Регистрация прошла успешно!<br/>Теперь Вы можете авторизоваться используя Ваш логин и пароль.</p>";
+
+header("HTTP/1.1 301 Moved Permanently");
+
+header('Location: http://localhost/lk.php');
+
+exit();
+
+?>
